@@ -95,8 +95,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	void app_main(void);
-	app_main();
+
 	/* USER CODE END WHILE */
 
 
