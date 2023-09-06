@@ -53,6 +53,9 @@ default.size.stdout \
 OBJDUMP_LIST += \
 ci-cd-class-1.list \
 
+OBJCOPY_BIN += \
+ci-cd-class-1.bin \
+
 
 # All Target
 all: main-build
@@ -61,8 +64,8 @@ all: main-build
 main-build: ci-cd-class-1.elf secondary-outputs
 
 # Tool invocations
-ci-cd-class-1.elf ci-cd-class-1.map: $(OBJS) $(USER_OBJS) /home/bilel_j/Desktop/jenkins_labs/ci-cd-class-1/STM32F401RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "ci-cd-class-1.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/home/bilel_j/Desktop/jenkins_labs/ci-cd-class-1/STM32F401RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ci-cd-class-1.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+ci-cd-class-1.elf ci-cd-class-1.map: $(OBJS) $(USER_OBJS) ../STM32F401RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "ci-cd-class-1.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"../STM32F401RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ci-cd-class-1.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -76,12 +79,17 @@ ci-cd-class-1.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
+ci-cd-class-1.bin: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "ci-cd-class-1.bin"
+	@echo 'Finished building: $@'
+	@echo ' '
+
 # Other Targets
 clean:
-	-$(RM) ci-cd-class-1.elf ci-cd-class-1.list ci-cd-class-1.map default.size.stdout
+	-$(RM) ci-cd-class-1.bin ci-cd-class-1.elf ci-cd-class-1.list ci-cd-class-1.map default.size.stdout
 	-@echo ' '
 
-secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
+secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_BIN)
 
 fail-specified-linker-script-missing:
 	@echo 'Error: Cannot find the specified linker script. Check the linker settings in the build configuration.'
